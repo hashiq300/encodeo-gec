@@ -3,16 +3,25 @@
 
 generator client {
     provider = "prisma-client-js"
-    previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-model Example {
+model Quiz {
+    id        String     @id @default(cuid())
+    createdAt DateTime   @default(now())
+    authorId  String     @db.VarChar(255)
+    questions Question[]
+}
+
+model Question {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    quiz      Quiz     @relation(fields: [quizId], references: [id])
+    question  String
+    answers   String[]
+    quizId    String
 }
