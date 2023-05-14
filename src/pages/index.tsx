@@ -3,12 +3,9 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Layout from "~/components/Layout";
 import styles from "~/styles/Home.module.css"
-import { api } from "~/utils/api";
 
 
 const Home: NextPage = () => {
-  const questions = api.question.get.useQuery();
-  console.log(questions.data)
   return (
     <>
       <Head>
