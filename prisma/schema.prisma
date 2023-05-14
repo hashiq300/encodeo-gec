@@ -11,17 +11,18 @@ datasource db {
 }
 
 model Quiz {
-    id        String     @id @default(cuid())
-    createdAt DateTime   @default(now())
-    authorId  String     @db.VarChar(255)
-    questions Question[]
+    createdAt      DateTime   @default(now())
+    code           String     @id @default(dbgenerated("lpad(floor(random() * (999999 - 100000 + 1) + 100000)::text, 6, '0')::text"))
+    TotalQuestions Int        @default(1)
+    authorId       String     @db.VarChar(255)
+    questions      Question[]
 }
 
 model Question {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
-    quiz      Quiz     @relation(fields: [quizId], references: [id])
+    quiz      Quiz     @relation(fields: [quizCode], references: [code])
     question  String
     answers   String[]
-    quizId    String
+    quizCode  String
 }

@@ -1,0 +1,8 @@
+.homeMain{
+    text-align: center;
+}
+
+.content{
+    max-width: var(--container-width);
+    margin: 3rem auto;
+}
