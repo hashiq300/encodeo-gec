@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.17.3",
     "@mantine/core": "^6.0.10",
     "@mantine/next": "^6.0.10",
     "@mantine/nprogress": "^6.0.10",

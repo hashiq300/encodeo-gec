@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 export function Input(props: TextInputProps) {
     const theme = useMantineTheme();
-    const [good, setGood] = useState(false);
+    const [good] = useState(false);
     return (
         <TextInput
             radius="sm"

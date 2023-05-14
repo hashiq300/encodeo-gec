@@ -4,11 +4,14 @@ import Head from "next/head";
 import Layout from "~/components/Layout";
 import styles from "~/styles/Home.module.css"
 import { api } from "~/utils/api";
+import { useUser } from "@clerk/nextjs";
 
 
 const Home: NextPage = () => {
   const questions = api.question.get.useQuery();
   console.log(questions.data)
+  const user = useUser()
+  console.log(user)
 
   return (
     <>

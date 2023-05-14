@@ -5,14 +5,17 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { RouterTransition } from "~/components/RouterTransition";
 import { MantineProvider } from "@mantine/core";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
 
   return (
-    <MantineProvider withGlobalStyles withNormalizeCSS>
-      <RouterTransition />
-      <Component {...pageProps} />
-    </MantineProvider>
+    <ClerkProvider {...pageProps}>
+      <MantineProvider withGlobalStyles withNormalizeCSS>
+        <RouterTransition />
+        <Component {...pageProps} />
+      </MantineProvider>
+    </ClerkProvider>
   );
 };
 
