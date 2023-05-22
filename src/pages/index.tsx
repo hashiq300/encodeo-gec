@@ -3,9 +3,18 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Layout from "~/components/Layout";
 import styles from "~/styles/Home.module.css"
+import { Text } from "@mantine/core";
+import { useUser } from "@clerk/nextjs";
+import HomeWithoutUser from "~/components/HomeWithoutUser";
 
 
 const Home: NextPage = () => {
+  const user = useUser()
+
+  if (!user.isLoaded) return null;
+
+  const fullName = (user.user?.firstName ?? "") + " " + (user.user?.lastName ?? "")
+
   return (
     <>
       <Head>
@@ -16,8 +25,25 @@ const Home: NextPage = () => {
       <Layout>
         <main className={styles.homeMain}>
           <div className={styles.content}>
-            <h1>Enter a code</h1>
-            <Input />
+            {user.isSignedIn ? (
+              <>
+                <Text mb="xl" ml="xl" color="var(--secondary-clr)" component="h3" fz="md" >Hi,
+                  <br />
+                  <Text fw="bolder" fz="xl" component="span">{fullName.trim()} 👋</Text></Text>
+
+                <Text
+                  ta="center"
+                  variant="gradient"
+                  gradient={{ from: "darkblue", to: "cyan", deg: 0 }}
+                  fz="2.5rem"
+                  component="h1"
+                  fw="bolder"
+                >
+                  Enter the code
+                </Text>
+                <Input />
+              </>
+            ) : <HomeWithoutUser />}
           </div>
         </main>
       </Layout>

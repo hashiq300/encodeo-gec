@@ -11,11 +11,13 @@ datasource db {
 }
 
 model Quiz {
-    createdAt      DateTime   @default(now())
-    code           String     @id @default(dbgenerated("lpad(floor(random() * (999999 - 100000 + 1) + 100000)::text, 6, '0')::text"))
-    totalQuestions Int        @default(1)
-    authorId       String     @db.VarChar(255)
-    questions      Question[]
+    createdAt         DateTime            @default(now())
+    code              String              @id @default(dbgenerated("lpad(floor(random() * (999999 - 100000 + 1) + 100000)::text, 6, '0')::text"))
+    totalQuestions    Int                 @default(0)
+    authorId          String              @db.VarChar(255)
+    questions         Question[]
+    //   duration          Int                 @default(600)
+    QuizParticipation QuizParticipation[]
 }
 
 model Question {
@@ -23,6 +25,26 @@ model Question {
     createdAt DateTime @default(now())
     quiz      Quiz     @relation(fields: [quizCode], references: [code])
     question  String
+    index     Int
     answers   String[]
     quizCode  String
+}
+
+model QuizParticipation {
+    id              String     @id @default(cuid())
+    createdAt       DateTime   @default(now())
+    quiz            Quiz       @relation(fields: [quizCode], references: [code])
+    quizCode        String
+    userId          String     @db.VarChar(255)
+    currentQuestion Int        @default(0)
+    status          QuizStatus @default(ONGOING)
+    //    endingAt        DateTime
+    completedAt     DateTime?
+
+    @@unique([quizCode, userId])
+}
+
+enum QuizStatus {
+    ONGOING
+    COMPLETED
 }

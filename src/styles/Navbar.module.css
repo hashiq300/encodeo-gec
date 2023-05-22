@@ -1,6 +1,11 @@
 .topNav {
     background-color: var(--primary-clr);
     color: var(--secondary-clr);
+    box-shadow: 
+    0 1px 1px var(--shadow-clr),
+    0 2px 2px var(--shadow-clr),
+    0 4px 4px var(--shadow-clr)
+    ;
 }
 
 .navbar {
@@ -9,12 +14,29 @@
     align-items: center;
     max-width: var(--container-width);
     margin: 0 auto;
-    padding: 0.5rem 1.5rem;
+    padding: 0.6em 1.5em;
 }
 
 .navLinks{
     display: flex;
+    align-items: center;
+    gap: 2rem;
     list-style: none;
     gap: 1rem;
-
 }
+
+
+.profile_img{
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+}
+
+.userIcon{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+

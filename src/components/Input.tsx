@@ -1,5 +1,5 @@
 import { TextInput, type TextInputProps, ActionIcon, useMantineTheme } from '@mantine/core';
-import { IconArrowRight, IconLoaderQuarter } from '@tabler/icons-react';
+import { IconArrowRight, IconLoaderQuarter, IconKeyboard } from '@tabler/icons-react';
 import { useRouter } from 'next/router';
 import { type FormEvent, useState } from 'react';
 import { api } from '~/utils/api';
@@ -32,7 +32,6 @@ export function Input(props: TextInputProps) {
             return;
         }
         setLoading(true)
-        setError(undefined)
         await hello.mutateAsync({
             code: code
         })
@@ -46,6 +45,7 @@ export function Input(props: TextInputProps) {
             <TextInput
                 radius="sm"
                 size="md"
+                icon={<IconKeyboard size={32} />}
                 rightSection={
                     <ActionIcon
                         type='submit'
@@ -58,6 +58,7 @@ export function Input(props: TextInputProps) {
                     >
                         {checkLoading ? (
                             <IconLoaderQuarter
+
                                 className="loader"
                                 size="1.1rem"
                                 stroke={1.5}
@@ -70,7 +71,7 @@ export function Input(props: TextInputProps) {
                 minLength={6}
                 maxLength={6}
                 pattern="[0-9]+"
-                placeholder="Enter the code"
+                placeholder="0 0 0 0 0 0"
                 value={code}
                 onChange={(e) => {
                     setError(undefined)

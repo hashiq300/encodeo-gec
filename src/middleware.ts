@@ -18,6 +18,5 @@ export const config = {
          * - favicon.ico (favicon file)
          */
         "/(.*?trpc.*?|(?!static|.*\\..*|_next|favicon.ico).*)",
-        "/"
     ]
 }

@@ -8,9 +8,22 @@ body {
   min-height: 100dvh;
 }
 
+
+#__next{
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+main{
+  flex-grow: 999;
+}
 :root{
-  --primary-clr: hsl(142, 69%, 58%);
-  --secondary-clr: white;
+  --secondary-clr: hsl(240, 100%, 27%);
+  --shadow-clr: hsl(195, 60%, 85%);
+  --primary-clr:  hsl(195, 53%, 79%);
+  --gradient-clr: hsl(150, 53%, 40%);
   --container-width: 60rem;
 }
 
