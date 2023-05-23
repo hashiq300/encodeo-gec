@@ -26,6 +26,7 @@ function Summary() {
     },
         {
             enabled: user.isLoaded && user.isSignedIn && code.length === 6,
+            refetchInterval: 20 * 1000,
             onSuccess: async (data) => {
                 if (data.exists === "FALSE") {
                     await router.push("/")

@@ -76,19 +76,20 @@ export function HomeWithoutUser() {
                 <h1 className={classes.title}>
                     Unleash Your Decoding Skills with{" "}
                     <Text component="span" variant="gradient" gradient={{ from: 'blue', to: 'cyan' }} inherit>
-                        Decodio
+                        Encodeo
                     </Text>{" "}
                 </h1>
 
                 <Text className={classes.description} color="dimmed">
-                    🔓 Decodio: The exciting decoding competition hosted by GEC Palakkad, as a pre-event for Invento, the tech fest. 🧠 Put your decoding skills to the test and unravel challenging puzzles. 🕵️‍♂️ Join now and showcase your knack for unraveling secrets and solving intricate codes! 🏆
+                    🔓 Encodeo: The exciting decoding competition hosted by GEC Palakkad, as a pre-event for Invento, the tech fest. 🧠 Put your decoding skills to the test and unravel challenging puzzles. 🕵️‍♂️ Join now and showcase your knack for unraveling secrets and solving intricate codes! 🏆
                 </Text>
 
                 <Group className={classes.controls}>
 
                     <Button
                         component='a'
-                        href='https://google.com'
+                        href='https://docs.google.com/forms/d/e/1FAIpQLSdRaAPXMNemIjmDEwmzTSAtjvqYZkETkTIViOhrNdmom1bi2g/viewform'
+                        target="_blank"
                         size="xl"
                         className={classes.control}
                         variant="gradient"

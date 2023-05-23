@@ -37,7 +37,9 @@ export default function QuizPage() {
         } else {
             setDisplayQuestion(prevQuestions[currentIndex])
         }
-    }, [currentIndex, currentQuestion, prevQuestions, quiz?.currentQuestion])
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentIndex])
 
 
 
@@ -47,6 +49,7 @@ export default function QuizPage() {
         code: code
     }, {
         enabled: user.isLoaded && user.isSignedIn && !invalidCode,
+        refetchOnWindowFocus: false,
         onSuccess: (data) => {
             if (data.isCompleted === "TRUE") {
                 void router.push(`/summary/${code}`);
@@ -126,7 +129,7 @@ export default function QuizPage() {
                         loading={checkAnswer.isLoading}
                         error={inputError}
                         setError={setInputError}
-                        currentQuestionIndex={quiz?.currentQuestion ?? 0}
+                        currentQuestionIndex={quiz?.currentQuestion ?? -1}
 
                         setCurrentIndex={setCurrentIndex}
                     />

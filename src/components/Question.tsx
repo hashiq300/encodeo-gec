@@ -39,13 +39,9 @@ const QuestionUI = ({
 
 
 
-    if (question === undefined) return null;
+    if (!question || currentQuestionIndex === -1) return null;
 
 
-    console.log({
-        question,
-        answer
-    })
 
 
 
@@ -85,6 +81,7 @@ const QuestionUI = ({
             >
 
                 {question.index !== 0 && <Button
+                    type="button"
                     disabled={question.index === 0}
                     mr="auto"
                     onClick={() => setCurrentIndex(prev => prev - 1)}
@@ -94,8 +91,10 @@ const QuestionUI = ({
 
                 {currentQuestionIndex !== question.index && (
                     <Button
+                        type="button"
                         onClick={() => setCurrentIndex(prev => prev + 1)}
                         ml="auto"
+                        miw="5.5rem"
                     >
                         Next
                     </Button>

@@ -18,7 +18,7 @@ const Navbar = () => {
                         fw="bolder"
                         gradient={{ from: 'var(--secondary-clr)', to: 'var(--gradient-clr)', deg: 45 }}
                         sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-                    >Decodio</Text>
+                    >Encodeo</Text>
                 </Link>
                 <ul className={styles.navLinks}>
                     <UserAvatar />

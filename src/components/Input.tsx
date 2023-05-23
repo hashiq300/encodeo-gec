@@ -53,7 +53,7 @@ export function Input(props: TextInputProps) {
                         radius="sm"
                         className='blue-background'
                         color={theme.primaryColor}
-                        disabled={checkLoading}
+                        disabled={checkLoading || code.length !== 6}
                         variant="filled"
                     >
                         {checkLoading ? (
@@ -71,7 +71,7 @@ export function Input(props: TextInputProps) {
                 minLength={6}
                 maxLength={6}
                 pattern="[0-9]+"
-                placeholder="0 0 0 0 0 0"
+                placeholder="0000000"
                 value={code}
                 onChange={(e) => {
                     setError(undefined)
