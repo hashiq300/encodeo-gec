@@ -76,7 +76,8 @@ const QuestionUI = ({
             <div
                 style={{
                     display: "flex",
-                    marginTop: '2rem'
+                    marginTop: '2rem',
+                    marginBottom: "2rem"
                 }}
             >
 
