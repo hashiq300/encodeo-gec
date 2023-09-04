@@ -10,3 +10,5 @@ export type CurrentQuestion = Get["currentQuestion"]
 export type Quiz = Get["quiz"]
 
 export type Participation = RouterOutputs["game"]["individualSummary"];
+
+export type Participants = NonNullable<RouterOutputs["game"]["summary"]["data"]>

@@ -160,7 +160,10 @@ export const gameRouter = createTRPCRouter({
                         },
                         data: {
                             status: "COMPLETED",
-                            completedAt: new Date()
+                            completedAt: new Date(),
+                            currentQuestion: {
+                                increment: 1,
+                            }
                         }
                     })
                     return {
@@ -263,16 +266,23 @@ export const gameRouter = createTRPCRouter({
         const participations = await ctx.prisma.quizParticipation.findMany({
             where: {
                 quizCode: input.code,
-                status: "COMPLETED"
             },
             select: {
                 id: true,
                 completedAt: true,
                 userId: true,
+                status: true,
+                currentQuestion: true,
+                quiz: {
+                    select: {
+                        totalQuestions: true
+                    }
+                }
             },
             orderBy: {
-                completedAt: "asc"
-            }
+                completedAt: "asc",
+                currentQuestion: "asc"
+            },
 
         })
 
@@ -301,6 +311,7 @@ function parseUser(user: User | undefined) {
             userId: crypto.randomUUID(),
             fullName: "ANON",
             profileImageUrl: "/anon.png",
+            email: "Nan"
         }
     }
     let fullName = (user?.firstName ?? "") + " " + (user?.lastName ?? "");
@@ -310,7 +321,8 @@ function parseUser(user: User | undefined) {
     return {
         userId: user.id,
         fullName,
-        profileImageUrl: user.profileImageUrl
+        profileImageUrl: user.profileImageUrl,
+        email: user.emailAddresses[0]?.emailAddress ?? "Nan"
     }
 
 }

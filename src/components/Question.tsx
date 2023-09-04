@@ -46,8 +46,9 @@ const QuestionUI = ({
 
     useEffect(() => {
         inputRef.current?.focus();
+        form.reset();
 
-    }, [question?.id, question])
+    }, [question?.id, question, form])
 
 
 
