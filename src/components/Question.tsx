@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useRef } from "react";
 import Markdown from "./Markdown";
 import type { CurrentQuestion } from "~/types";
-// import { Loader } from "lucide-react"; 
 import { Button } from "./ui/button";
 
 import { useForm } from "react-hook-form"
