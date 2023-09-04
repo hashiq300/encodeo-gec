@@ -1,14 +1,14 @@
 import NextError from "next/error"
-import { useEffect, useState } from 'react';
-import { Container } from '@mantine/core';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { api } from '~/utils/api';
 import { useUser } from '@clerk/nextjs';
 import QuestionUI from '~/components/Question';
 import Layout from "~/components/Layout";
-import type { CurrentQuestion, Question, Quiz } from "~/types";
-import { parseCode } from "~/utils/parser";
+import type { CurrentQuestion, Quiz } from "~/types";
 import Loader from "~/components/Loader";
+import { codeSchema, type questionSchema } from "~/lib/schema";
+import type * as z from "zod"
 
 
 
@@ -16,32 +16,20 @@ import Loader from "~/components/Loader";
 
 export default function QuizPage() {
     const [currentQuestion, setCurrentQuestion] = useState<CurrentQuestion>();
-    const [displayQuestion, setDisplayQuestion] = useState<Question>();
     const [quiz, setQuiz] = useState<Quiz>();
-    const [currentIndex, setCurrentIndex] = useState(-1);
-    const [prevQuestions, setPrevQuestions] = useState<Question[]>([]);
     const [loading, setLoading] = useState(true);
     const [inputError, setInputError] = useState<string>()
     const router = useRouter();
     const user = useUser();
-    const code = parseCode(router.query.code)
 
-    const invalidCode = (code.length !== 6 || !/^\d+$/.test(code)) && code.length !== 0;
-    useEffect(() => {
-        if (currentIndex === -1) return;
-        if (currentIndex === quiz?.currentQuestion && currentQuestion) {
-            setDisplayQuestion({
-                ...currentQuestion,
-                answers: ""
-            })
-        } else {
-            setDisplayQuestion(prevQuestions[currentIndex])
-        }
+    const parsedCode = codeSchema.safeParse({ code: router.query.code });
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentIndex])
+    const invalidCode = !parsedCode.success;
 
-
+    let code = ""
+    if (parsedCode.success) {
+        code = codeSchema.parse({ code: router.query.code }).code;
+    }
 
 
 
@@ -54,11 +42,8 @@ export default function QuizPage() {
             if (data.isCompleted === "TRUE") {
                 void router.push(`/summary/${code}`);
             } else {
-                const { details } = data
-                setPrevQuestions(details.prevQuestions);
-                setCurrentIndex(details.quiz.currentQuestion);
-                setCurrentQuestion(details.currentQuestionContent);
-                setQuiz(details.quiz);
+                setCurrentQuestion(data.currentQuestion);
+                setQuiz(data.quiz);
                 setLoading(false)
             }
         },
@@ -66,22 +51,22 @@ export default function QuizPage() {
     })
 
     const checkAnswer = api.game.check.useMutation({
-        onSuccess: async (data, variables) => {
+        onSuccess: async (data) => {
             if (data.isCorrect) {
                 if (data.isFinal) {
                     console.log("final answer");
                     await router.push(`/summary/${code}`)
                 } else if (data.nextQuestion && currentQuestion && quiz) {
-                    setQuiz({
-                        id: quiz.id,
-                        currentQuestion: currentQuestion.index + 1,
-                        status: quiz.status
+                    setQuiz(prev => {
+                        if (prev) {
+                            return {
+                                id: prev.id,
+                                currentQuestion: data.nextQuestion.index,
+                                status: prev.status
+                            }
+                        } else return undefined
                     })
-                    setPrevQuestions(prev => ([...prev, {
-                        ...currentQuestion,
-                        answers: variables.answer,
-                    }]))
-                    setCurrentIndex(data.nextQuestion.index)
+
                     setCurrentQuestion(data.nextQuestion)
                 }
             } else {
@@ -92,11 +77,15 @@ export default function QuizPage() {
         onError: async (error) => {
             if (error.data?.code === "UNAUTHORIZED") {
                 await router.push("/")
+            } else {
+                await router.push("/error")
             }
         },
     });
 
-    if (!user.isLoaded) return null;
+    if (!user.isLoaded) {
+        return null;
+    }
 
     if (!user.isSignedIn) {
         void router.push("/");
@@ -111,29 +100,22 @@ export default function QuizPage() {
 
     if (pageLoading) return <Loader />
 
-    const handleFormSubmit = async (evt: React.FormEvent<HTMLFormElement>, answer: string) => {
-        evt.preventDefault();
+    const handleFormSubmit = async (data: z.infer<typeof questionSchema>) => {
         await checkAnswer.mutateAsync({
-            answer,
+            answer: data.answer,
             code
         })
     }
 
     return (
         <Layout>
-            <main>
-                <Container size="md">
+            <main className="container my-6 px-2 md:px-24 lg:px-32">
                     <QuestionUI
-                        question={displayQuestion}
-                        handleFormSubmit={handleFormSubmit}
-                        loading={checkAnswer.isLoading}
-                        error={inputError}
-                        setError={setInputError}
-                        currentQuestionIndex={quiz?.currentQuestion ?? -1}
-
-                        setCurrentIndex={setCurrentIndex}
-                    />
-                </Container>
+                    question={currentQuestion}
+                    handleFormSubmit={handleFormSubmit}
+                    loading={checkAnswer.isLoading}
+                    error={inputError}
+                />
             </main>
         </Layout>
     );

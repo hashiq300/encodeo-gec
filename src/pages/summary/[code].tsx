@@ -1,41 +1,38 @@
 import { useRouter } from "next/router"
 import NextError from "next/error"
-import { dateTimeToString, parseCode } from "~/utils/parser"
+import { parseCode } from "~/utils/parser"
 import { api } from "~/utils/api"
 import { useUser } from "@clerk/nextjs"
 import { useState } from "react"
 import type { Participation } from "~/types"
 import Layout from "~/components/Layout"
 import Loader from "~/components/Loader"
-import { Image } from "@mantine/core"
-
+import { codeSchema } from "~/lib/schema"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 
 
 function Summary() {
 
-    const router = useRouter()
-    const user = useUser()
-    const code = parseCode(router.query.code)
-    const [participations, setParticipations] = useState<Participation[]>([]);
+    const router = useRouter();
+    const user = useUser();
+    const code = parseCode(router.query.code);
     const [loading, setLoading] = useState(true);
+    const [participation, setParticipation] = useState<Participation>()
 
-    const invalidCode = (code.length !== 6 || !/^\d+$/.test(code)) && code.length !== 0;
+    const invalidCode = !codeSchema.safeParse({ code }).success;
 
-    api.game.summary.useQuery({
-        code: code
-    },
+    api.game.individualSummary.useQuery(code,
         {
-            enabled: user.isLoaded && user.isSignedIn && code.length === 6,
-            refetchInterval: 20 * 1000,
-            onSuccess: async (data) => {
-                if (data.exists === "FALSE") {
-                    await router.push("/")
-                } else {
-                    setParticipations(data.data)
-                    setLoading(false)
-                }
+            enabled: user.isLoaded && user.isSignedIn && !invalidCode,
+            // refetchInterval: 20 * 1000,
+            refetchOnWindowFocus: false,
+            onSuccess: (data) => {
+                setParticipation(data);
+                setLoading(false);
             },
-
+            onError: () => {
+                void router.push("/");
+            },
         })
 
 
@@ -56,29 +53,23 @@ function Summary() {
 
     return (
         <Layout>
-            <h1>{code}</h1>
-            <h3>Winners :-</h3>
-            <ul>
-                {participations.map((participation) => (
-                    <li key={participation.id}>
-
-                        <Image
-                            height={38}
-                            radius="xl"
-                            placeholder={<Image src="/usericon.png" alt="" />} withPlaceholder
-                            width={38}
-                            src={participation.user.profileImageUrl}
-                            alt={`profile pic of ${participation.user.fullName}`}
-                        />
-                        <h2>{participation.user.fullName}</h2>
-                        <p>completed at: {dateTimeToString(participation.completedAt)}</p>
-                    </li>
-                )
-                )}
-            </ul>
+            <main className="flex justify-center items-center">
+                <Card className="mt-72 md:mt-52 px-4 py-2">
+                    <CardHeader>
+                        <CardTitle>
+                            Quiz result of {code}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <CardDescription>
+                            {participation?.completedAt && <p className="text-center">completed at: {participation.completedAt.toLocaleString()}</p>}
+                        </CardDescription>
+                    </CardContent>
+                </Card>
+            </main>
         </Layout>
     )
 }
 
 
-export default Summary
+export default Summary;

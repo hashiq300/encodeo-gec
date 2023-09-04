@@ -1,26 +1,19 @@
-import { SignInButton, useClerk, useUser } from "@clerk/nextjs"
-import { Button, Text } from "@mantine/core"
-import { IconLogout } from "@tabler/icons-react"
+import { SignInButton, UserButton, useClerk, useUser } from "@clerk/nextjs"
+import { LogOut } from "lucide-react"
+
 import Link from "next/link"
-import styles from "~/styles/Navbar.module.css"
+import { Button } from "./ui/button"
 
 
 const Navbar = () => {
 
     return (
-        <nav className={styles.topNav}>
-            <div className={styles.navbar}>
+        <nav className="container border-b-2 border-primary">
+            <div className="flex justify-between items-center py-5">
                 <Link href="/">
-                    <Text
-                        component="h2"
-                        variant="gradient"
-                        fz="2rem"
-                        fw="bolder"
-                        gradient={{ from: 'var(--secondary-clr)', to: 'var(--gradient-clr)', deg: 45 }}
-                        sx={{ fontFamily: 'Greycliff CF, sans-serif' }}
-                    >Encodeo</Text>
+                    <h1 className="font-bold text-3xl">Encodeo</h1>
                 </Link>
-                <ul className={styles.navLinks}>
+                <ul className="">
                     <UserAvatar />
                 </ul>
             </div>
@@ -35,28 +28,22 @@ const UserAvatar = () => {
     if (!user.user) return (
         <SignInButton >
             <Button
-                variant="gradient"
-                gradient={{ from: 'blue', to: 'cyan' }}
             >Sign in</Button>
         </SignInButton>
     );
 
 
     return (
-        <div className={styles.userIcon}>
+        <div className="flex gap-12 items-center">
             <Button
                 onClick={() => signOut()}
-                size="sm"
-                px="xs"
-                style={{ backgroundColor: "var(--secondary-clr)" }}
             >
-                <IconLogout />
-                <Text ml="0.25em" mb="-0.2em">
+                <LogOut className="w-5 h-5 mr-1" />
+                <p>
                     Logout
-                </Text>
+                </p>
             </Button>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={styles.profile_img} src={user.user.profileImageUrl ?? ""} alt={user.user.lastName ?? ""} />
+            <UserButton afterSignOutUrl="/" />
 
         </div>
     )

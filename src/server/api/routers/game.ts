@@ -1,11 +1,9 @@
-
 import { clerkClient } from "@clerk/nextjs";
-import { User } from "@clerk/nextjs/server";
+import type { User } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { parseQuestions } from "~/utils/parser";
 import { checkCode } from "./quiz";
 
 
@@ -46,12 +44,11 @@ export const gameRouter = createTRPCRouter({
                     data: {
                         userId: ctx.auth.userId,
                         quizCode: quiz.code,
-                        // endingAt: new Date(new Date().getTime() + quiz.duration * 1000)
                     },
                     select: {
                         currentQuestion: true,
                         id: true,
-                        status: true
+                        status: true,
                     }
                 })
                 if (quizParticipation === null) {
@@ -68,38 +65,35 @@ export const gameRouter = createTRPCRouter({
                 isCompleted = "TRUE"
                 return {
                     isCompleted,
-                    details: null
                 }
             }
 
 
-            const questions = await ctx.prisma.question.findMany({
+            const question = await ctx.prisma.question.findFirst({
                 where: {
-                    index: {
-                        lte: quizParticipation.currentQuestion
-                    }
+                    index: quizParticipation.currentQuestion,
+                    quizCode: input.code,
                 },
                 select: {
-                    answers: true,
                     id: true,
                     question: true,
                     index: true,
-                },
-                orderBy: {
-                    index: "asc"
                 }
             })
 
-            const splittedQuestions = parseQuestions(questions, quizParticipation.currentQuestion);
+            if (!question) {
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR"
+                })
+            }
+
 
 
 
             return {
                 isCompleted,
-                details: {
-                    quiz: quizParticipation,
-                    ...splittedQuestions
-                }
+                quiz: quizParticipation,
+                currentQuestion: question,
             }
         }),
     check: protectedProcedure.input(z.object({ answer: z.string().min(1), code: z.string().length(6) }))
@@ -143,7 +137,7 @@ export const gameRouter = createTRPCRouter({
 
             if (!question) {
                 throw new TRPCError({
-                    message: "ques not found",
+                    message: "question not found",
                     code: "INTERNAL_SERVER_ERROR"
                 })
             }
@@ -156,7 +150,7 @@ export const gameRouter = createTRPCRouter({
             })
 
             if (isCorrect) {
-                if (quizParticipation.currentQuestion >= quizParticipation.quiz.totalQuestions - 1) {
+                if (quizParticipation.currentQuestion === quizParticipation.quiz.totalQuestions - 1) {
                     await ctx.prisma.quizParticipation.update({
                         where: {
                             quizCode_userId: {
@@ -166,7 +160,10 @@ export const gameRouter = createTRPCRouter({
                         },
                         data: {
                             status: "COMPLETED",
-                            completedAt: new Date()
+                            completedAt: new Date(),
+                            currentQuestion: {
+                                increment: 1,
+                            }
                         }
                     })
                     return {
@@ -228,6 +225,34 @@ export const gameRouter = createTRPCRouter({
 
 
         }),
+    individualSummary: protectedProcedure.input(z.string().length(6)).query
+        (async ({ ctx, input: code }) => {
+            const participation = await ctx.prisma.quizParticipation.findFirst({
+                where: {
+                    quizCode: code,
+                    userId: ctx.auth.userId
+                },
+                select: {
+                    completedAt: true,
+                    status: true,
+                }
+            })
+
+            if (!participation) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Invalid quiz code"
+                })
+            } else if (participation.status !== "COMPLETED") {
+                throw new TRPCError({
+                    code: "FORBIDDEN",
+                    message: "quiz is not completed"
+                })
+            }
+
+
+            return participation
+        }),
     summary: protectedProcedure.input(z.object({ code: z.string().length(6) })).query(async ({ ctx, input }) => {
         const ans = await checkCode(ctx, input.code)
         let exists: "TRUE" | "FALSE" = "TRUE"
@@ -241,16 +266,23 @@ export const gameRouter = createTRPCRouter({
         const participations = await ctx.prisma.quizParticipation.findMany({
             where: {
                 quizCode: input.code,
-                status: "COMPLETED"
             },
             select: {
                 id: true,
                 completedAt: true,
                 userId: true,
+                status: true,
+                currentQuestion: true,
+                quiz: {
+                    select: {
+                        totalQuestions: true
+                    }
+                }
             },
             orderBy: {
-                completedAt: "asc"
-            }
+                completedAt: "asc",
+                currentQuestion: "asc"
+            },
 
         })
 
@@ -279,6 +311,7 @@ function parseUser(user: User | undefined) {
             userId: crypto.randomUUID(),
             fullName: "ANON",
             profileImageUrl: "/anon.png",
+            email: "Nan"
         }
     }
     let fullName = (user?.firstName ?? "") + " " + (user?.lastName ?? "");
@@ -288,7 +321,8 @@ function parseUser(user: User | undefined) {
     return {
         userId: user.id,
         fullName,
-        profileImageUrl: user.profileImageUrl
+        profileImageUrl: user.profileImageUrl,
+        email: user.emailAddresses[0]?.emailAddress ?? "Nan"
     }
 
 }

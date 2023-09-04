@@ -32,13 +32,3 @@ export function parseQuestions(questions: Question[], current: number) {
 }
 
 
-export function dateTimeToString(dateTime: Date | null) {
-    if (!dateTime) return "";
-    const year = dateTime.getFullYear();
-    const month = ('0' + (dateTime.getMonth() + 1)).slice(-2);
-    const day = ('0' + dateTime.getDate()).slice(-2);
-    const hour = ('0' + dateTime.getHours()).slice(-2);
-    const minute = ('0' + dateTime.getMinutes()).slice(-2);
-    const second = ('0' + dateTime.getSeconds()).slice(-2);
-    return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
-}
