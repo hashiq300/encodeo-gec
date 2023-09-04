@@ -1,11 +1,8 @@
-// import { Input } from "~/components/Input";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Layout from "~/components/Layout";
-// import { Text } from "@mantine/core";
 import { useUser } from "@clerk/nextjs";
 import HomeWithoutUser from "~/components/HomeWithoutUser";
-import { Button } from "~/components/ui/button";
 import { Fragment } from "react";
 import { InputForm } from "~/components/InputForm";
 
