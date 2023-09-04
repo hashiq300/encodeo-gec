@@ -1,15 +1,12 @@
-import { Loader as Load } from "@mantine/core"
+// import { Loader as Load } from "@mantine/core"
+import { Loader2 } from "lucide-react"
 import Layout from "./Layout"
 
 const Loader = () => {
     return (
         <Layout>
-            <main style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-            }}>
-                <Load />
+            <main className="flex min-h-full justify-center items-center">
+                <Loader2 className="" />
             </main>
         </Layout>
     )

@@ -1,11 +1,13 @@
-import { Input } from "~/components/Input";
+// import { Input } from "~/components/Input";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Layout from "~/components/Layout";
-import styles from "~/styles/Home.module.css"
-import { Text } from "@mantine/core";
+// import { Text } from "@mantine/core";
 import { useUser } from "@clerk/nextjs";
 import HomeWithoutUser from "~/components/HomeWithoutUser";
+import { Button } from "~/components/ui/button";
+import { Fragment } from "react";
+import { InputForm } from "~/components/InputForm";
 
 
 const Home: NextPage = () => {
@@ -23,41 +25,25 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <main className={styles.homeMain}>
-          <div className={styles.content}>
+        <main className="container">
             {user.isSignedIn ? (
-              <>
-                <Text
-                  mb="xl"
-                  ml="xl"
-                  color="var(--secondary-clr)"
-                  component="h3"
-                  fz="md"
-                >Hi,
-                  <br />
-                  <Text
-                    fw="bolder"
-                    fz="xl"
-                    component="span"
-                  >
+            <Fragment>
+              <h1
+                className="ml-12 my-12 text-xl font-medium"
+              >Hi,
+                <span>
                     {fullName.trim()} 👋
-                  </Text>
-                </Text>
+                </span>
+              </h1>
 
-                <Text
-                  ta="center"
-                  variant="gradient"
-                  gradient={{ from: "darkblue", to: "cyan", deg: 0 }}
-                  fz="2.5rem"
-                  component="h1"
-                  fw="bolder"
+              <h2
+                className="text-center text-4xl font-bold"
                 >
                   Enter the code
-                </Text>
-                <Input />
-              </>
-            ) : <HomeWithoutUser />}
-          </div>
+              </h2>
+              <InputForm />
+            </Fragment>
+          ) : <HomeWithoutUser />}
         </main>
       </Layout>
     </>

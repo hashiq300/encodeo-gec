@@ -1,45 +1,57 @@
-import { Button, Text, TextInput } from "@mantine/core";
-import { IconLoaderQuarter } from "@tabler/icons-react";
-import React, { useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown"
-import type { Question, SetState } from "~/types";
+import { Fragment, useEffect, useRef } from "react";
+import Markdown from "./Markdown";
+import type { CurrentQuestion } from "~/types";
+// import { Loader } from "lucide-react"; 
+import { Button } from "./ui/button";
+
+import { useForm } from "react-hook-form"
+import type * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { questionSchema } from "~/lib/schema";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
+
 
 type QuestionUIProps = {
-    question: Question | undefined;
-    handleFormSubmit: (evt: React.FormEvent<HTMLFormElement>, answer: string) => Promise<void>;
+    question: CurrentQuestion;
+    handleFormSubmit: (data: z.infer<typeof questionSchema>) => Promise<void>;
     loading: boolean;
     error: string | undefined;
-    setError: SetState<string | undefined>;
-    currentQuestionIndex: number;
-    setCurrentIndex: SetState<number>
 }
 
 const QuestionUI = ({
     question,
-    handleFormSubmit,
     error,
-    setError,
     loading,
-    currentQuestionIndex,
-    setCurrentIndex
+    handleFormSubmit,
 }: QuestionUIProps) => {
 
-    const [answer, setAnswer] = useState(question?.answers ?? "");
+
     const inputRef = useRef<HTMLInputElement | null>(null);
 
-    useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
+    const form = useForm<z.infer<typeof questionSchema>>({
+        resolver: zodResolver(questionSchema),
+        defaultValues: {
+            answer: ""
         }
+    })
 
-        if (question) {
-            setAnswer(question.answers)
+    useEffect(() => {
+        if (error) {
+            form.setError("answer", {
+                message: error
+            })
         }
+    }, [error, form])
+
+    useEffect(() => {
+        inputRef.current?.focus();
+
     }, [question?.id, question])
 
 
 
-    if (!question || currentQuestionIndex === -1) return null;
+    if (!question) return null;
 
 
 
@@ -48,74 +60,26 @@ const QuestionUI = ({
 
     return (
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        <form
-            onSubmit={async (evt) => {
-                await handleFormSubmit(evt, answer);
-                setAnswer("")
-            }}
-            style={{
-                marginTop: "2rem"
-            }}
-        >
-            <Text fz="sm" >Q.no: <Text fz="xl" component="span">{question.index + 1}</Text></Text>
-            <ReactMarkdown className="question_markdown">
-                {question.question}
-            </ReactMarkdown>
-            <div style={{ display: 'flex', flexDirection: 'column', marginTop: '1rem' }}>
-                <TextInput
-                    ref={inputRef}
-                    disabled={loading || question.answers.length > 0}
-                    error={error}
-                    value={answer}
-                    onChange={(e) => {
-                        setAnswer(e.target.value);
-                        setError(undefined)
-                    }}
-                />
-            </div>
-            <div
-                style={{
-                    display: "flex",
-                    marginTop: '2rem',
-                    marginBottom: "2rem"
-                }}
-            >
-
-                {question.index !== 0 && <Button
-                    type="button"
-                    disabled={question.index === 0}
-                    mr="auto"
-                    onClick={() => setCurrentIndex(prev => prev - 1)}
-                >
-                    Previous
-                </Button>}
-
-                {currentQuestionIndex !== question.index && (
-                    <Button
-                        type="button"
-                        onClick={() => setCurrentIndex(prev => prev + 1)}
-                        ml="auto"
-                        miw="5.5rem"
-                    >
-                        Next
-                    </Button>
-                )}
-                {currentQuestionIndex === question.index && (
-                    <Button
-                        ml="auto"
-                        type="submit"
-                        disabled={answer.trim().length === 0 || loading}
-                        miw="5.5rem"
-                    >
-                        {loading ? (<IconLoaderQuarter
-                            className="loader"
-                            size="1.1rem"
-                            stroke={1.5}
-                        />) : "Submit"}
-                    </Button>
-                )}
-            </div>
-        </form>
+        <Fragment>
+            <Markdown content={question.question} />
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+                    <FormField
+                        control={form.control}
+                        name="answer"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Input placeholder="Enter the answer" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button disabled={loading} type="submit">Submit</Button>
+                </form>
+            </Form>
+        </Fragment>
     );
 };
 

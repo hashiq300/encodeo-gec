@@ -1,13 +1,12 @@
 import type { RouterOutputs } from "./utils/api"
 
-type Details = NonNullable<RouterOutputs["game"]["get"]["details"]>
+type Get = RouterOutputs["game"]["get"]
 
 export type SetState<T> = React.Dispatch<React.SetStateAction<T>>
 
-export type Question = Details["prevQuestions"][number]
 
-export type CurrentQuestion = Details["currentQuestionContent"]
+export type CurrentQuestion = Get["currentQuestion"]
 
-export type Quiz = Details["quiz"]
+export type Quiz = Get["quiz"]
 
-export type Participation = (NonNullable<RouterOutputs["game"]["summary"]["data"]>)[number]
+export type Participation = RouterOutputs["game"]["individualSummary"];
