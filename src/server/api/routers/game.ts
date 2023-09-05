@@ -253,9 +253,20 @@ export const gameRouter = createTRPCRouter({
 
             return participation
         }),
-    summary: protectedProcedure.input(z.object({ code: z.string().length(6) })).query(async ({ ctx, input }) => {
+    summary: protectedProcedure.input(z.object({ code: z.string().length(6), password: z.string().min(3) })).query(async ({ ctx, input }) => {
         const ans = await checkCode(ctx, input.code)
-        let exists: "TRUE" | "FALSE" = "TRUE"
+        let exists: "TRUE" | "FALSE" | "WRONG" = "TRUE"
+        const password = process.env.PASSWORD ?? "something"
+
+        if (password !== input.password) {
+            exists = "WRONG";
+            return {
+                exists,
+                data: null,
+            }
+        }
+
+
         if (!ans.exists) {
             exists = "FALSE"
             return {
@@ -281,7 +292,6 @@ export const gameRouter = createTRPCRouter({
             },
             orderBy: {
                 completedAt: "asc",
-                currentQuestion: "asc"
             },
 
         })

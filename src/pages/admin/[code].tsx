@@ -15,7 +15,20 @@ import { parseCode } from "~/utils/parser"
 import { codeSchema } from "~/lib/schema"
 import { useState } from "react"
 import type { Participants } from "~/types"
-import { Loader } from "lucide-react"
+import Loader from "~/components/Loader"
+import { useForm } from "react-hook-form"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "~/components/ui/form"
+import { Input } from "~/components/ui/input"
+import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "~/components/ui/button"
+
+const passwordSchema = z.object({
+    password: z.string().min(3, {
+        message: "password should be min 3 characters"
+    })
+})
+
 
 
 function Summary() {
@@ -24,28 +37,80 @@ function Summary() {
     const invalidCode = !codeSchema.safeParse({ code }).success;
     const [participants, setParticipants] = useState<Participants>([]);
     const [loading, setLoading] = useState(true);
-    const participantsQuery = api.game.summary.useQuery({ code }, {
-        enabled: !invalidCode,
+    const [password, setPassword] = useState<string>("");
+    const [error, setError] = useState<string>("");
+
+    const form = useForm<z.infer<typeof passwordSchema>>({
+        resolver: zodResolver(passwordSchema),
+        defaultValues: {
+            password: ""
+        },
+    })
+
+    function onSubmit(data: z.infer<typeof passwordSchema>) {
+        setPassword(data.password);
+        setError("")
+    }
+
+    const participantsQuery = api.game.summary.useQuery({ code, password }, {
+        enabled: !invalidCode && password !== "",
         onSuccess: (data) => {
             if (data.exists === "FALSE") {
                 void router.push("/");
-            } else {
+            } else if (data.exists === "TRUE") {
                 setParticipants(data.data)
                 setLoading(false)
+            } else {
+                setError("Wrong password");
             }
         },
         onError: () => {
-            void router.push("/")
+            void router.push("/");
         }
     });
 
-    if (loading || participantsQuery.isLoading) return (
-        <Layout>
-            <main className="flex justify-center">
-                <Loader className="w-10 h-10 animate-spin mt-20" />
-            </main>
-        </Layout>
-    )
+    if (error !== "") {
+        return (
+            <Layout>
+                <main className="container mt-12 flex gap-8 justify-center items-center">
+                    <h1 className="text-2xl font-medium text-red-600 dark:text-red-500 ">{error}</h1>
+                    <Button className="bg-blue-600 hover:bg-blue-800 hover:dark:bg-blue-900 text-blue-50 dark:bg-blue-800" onClick={() => {
+                        setError("")
+                        setPassword("")
+                    }}>Try Again</Button>
+                </main>
+            </Layout>
+        )
+    }
+
+    if (password === "") {
+        return (
+            <Layout>
+                <main className="container mt-5 max-w-[50rem]">
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-10 mx-auto">
+                            <h1 className="text-4xl font-bold text-center">Enter the Password</h1>
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input placeholder="Enter password" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button disabled={participantsQuery.isLoading && password !== ""} className='float-right' type="submit">Submit</Button>
+                        </form>
+                    </Form>
+                </main>
+            </Layout>
+        )
+    }
+
+    if (loading || participantsQuery.isLoading) return <Loader />
     return (
         <Layout>
             <main className="container mt-5">
