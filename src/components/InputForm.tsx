@@ -58,7 +58,7 @@ export function InputForm() {
     }
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-10 mx-auto">
                 <FormField
                     control={form.control}
                     name="code"

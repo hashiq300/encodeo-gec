@@ -3,6 +3,7 @@ import { LogOut } from "lucide-react"
 
 import Link from "next/link"
 import { Button } from "./ui/button"
+import { ModeToggle } from "./ModeToggle"
 
 
 const Navbar = () => {
@@ -13,7 +14,8 @@ const Navbar = () => {
                 <Link href="/">
                     <h1 className="font-bold text-3xl">Encodeo</h1>
                 </Link>
-                <ul className="">
+                <ul className="flex items-center gap-4 sm:gap-5  md:gap-8">
+                    <ModeToggle />
                     <UserAvatar />
                 </ul>
             </div>
@@ -34,8 +36,9 @@ const UserAvatar = () => {
 
 
     return (
-        <div className="flex gap-12 items-center">
+        <div className="flex md:gap-12 items-center">
             <Button
+                className="hidden md:inline-flex"
                 onClick={() => signOut()}
             >
                 <LogOut className="w-5 h-5 mr-1" />
