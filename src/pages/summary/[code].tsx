@@ -9,6 +9,9 @@ import Layout from "~/components/Layout"
 import Loader from "~/components/Loader"
 import { codeSchema } from "~/lib/schema"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
+import Head from "next/head"
+import { Button } from "~/components/ui/button"
+import Link from "next/link"
 
 
 function Summary() {
@@ -53,6 +56,11 @@ function Summary() {
 
     return (
         <Layout>
+            <Head>
+                <title>Encodeo | {code}</title>
+                <meta name="description" content="Encodeo GEC Palakkad, Invento pre-event" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
             <main className="flex justify-center items-center">
                 <Card className="mt-72 md:mt-52 px-4 py-2">
                     <CardHeader>
@@ -64,6 +72,11 @@ function Summary() {
                         <CardDescription>
                             {participation?.completedAt && <p className="text-center">completed at: {participation.completedAt.toLocaleString()}</p>}
                         </CardDescription>
+                        <div className="flex mt-6">
+                            <Link href="/" className="border-primary border-2 rounded-sm mx-auto">
+                                <Button variant="link">Go Home</Button>
+                            </Link>
+                        </div>
                     </CardContent>
                 </Card>
             </main>

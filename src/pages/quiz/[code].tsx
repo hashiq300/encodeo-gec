@@ -9,6 +9,7 @@ import type { CurrentQuestion, Quiz } from "~/types";
 import Loader from "~/components/Loader";
 import { codeSchema, type questionSchema } from "~/lib/schema";
 import type * as z from "zod"
+import Head from "next/head";
 
 
 
@@ -109,6 +110,11 @@ export default function QuizPage() {
 
     return (
         <Layout>
+            <Head>
+                <title>Encodeo | {code}</title>
+                <meta name="description" content="Encodeo GEC Palakkad, Invento pre-event" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
             <main className="container my-6 px-2 md:px-24 lg:px-32">
                     <QuestionUI
                     question={currentQuestion}
