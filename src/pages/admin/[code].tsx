@@ -54,6 +54,8 @@ function Summary() {
 
     const participantsQuery = api.game.summary.useQuery({ code, password }, {
         enabled: !invalidCode && password !== "",
+        refetchInterval: 5 * 1000,
+        refetchOnWindowFocus: false,
         onSuccess: (data) => {
             if (data.exists === "FALSE") {
                 void router.push("/");
