@@ -55,7 +55,6 @@ export default function QuizPage() {
         onSuccess: async (data) => {
             if (data.isCorrect) {
                 if (data.isFinal) {
-                    console.log("final answer");
                     await router.push(`/summary/${code}`)
                 } else if (data.nextQuestion && currentQuestion && quiz) {
                     setQuiz(prev => {

@@ -60,6 +60,15 @@ function Summary() {
             if (data.exists === "FALSE") {
                 void router.push("/");
             } else if (data.exists === "TRUE") {
+                data.data.sort((a, b) => {
+                    if (a.currentQuestion === b.currentQuestion) {
+                        if (a.updatedAt.getTime() < b.updatedAt.getTime()) {
+                            return -1;
+                        }
+                    }
+
+                    return 0;
+                })
                 setParticipants(data.data)
                 setLoading(false)
             } else {
@@ -134,7 +143,7 @@ function Summary() {
                                     <TableCell className="font-medium">{participant.user.fullName}</TableCell>
                                     <TableCell>{participant.user.email}</TableCell>
                                     <TableCell>{participant.status}</TableCell>
-                                    <TableCell>{participant.completedAt?.toLocaleString() ?? "Nan"}</TableCell>
+                                    <TableCell>{participant.completedAt?.toLocaleString() ?? `${participant.updatedAt.toLocaleString()} (last updated)`}</TableCell>
                                     <TableCell>
 
                                         <Progress value={participant.currentQuestion * 100 / participant.quiz.totalQuestions} />
