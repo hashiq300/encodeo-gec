@@ -62,15 +62,17 @@ function Summary() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className="flex justify-center items-center">
-                <Card className="mt-72 md:mt-52 px-4 py-2">
+                <Card className="mt-48 md:mt-36 px-1 md:px-4 py-2 max-w-[45rem] mx-4">
                     <CardHeader>
-                        <CardTitle>
-                            Quiz result of {code}
+                        <CardTitle className="text-center text-sm font-extrabold md:text-2xl">
+                            🎉 Congratulations on conquering ENCODEO! 🎉
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <CardDescription>
-                            {participation?.completedAt && <p className="text-center">completed at: {participation.completedAt.toLocaleString()}</p>}
+                            <p className="text-center text-xs md:text-sm">You&apos;re a true champion. Thanks for playing! We invite you to continue your tech journey at INVENTO, our thrilling tech fest! Explore, innovate, and experience the future. Join us there for more tech excitement! 🚀👏</p>
+                            {participation?.completedAt && <p className="text-center mt-5 text-xs md:text-sm">completed at: {participation.completedAt.toLocaleString()}</p>}
+
                         </CardDescription>
                         <div className="flex mt-6">
                             <Link href="/" className="border-primary border-2 rounded-sm mx-auto">

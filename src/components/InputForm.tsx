@@ -32,7 +32,6 @@ export function InputForm() {
     const router = useRouter();
     const hello = api.quiz.check.useMutation({
         onSuccess: async (data) => {
-            console.log(data)
             if (data.exists) {
                 await router.push(`/quiz/${data.code}`);
 
@@ -47,7 +46,6 @@ export function InputForm() {
     const checkLoading = hello.isLoading && loading;
 
     const onSubmit = async (values: z.infer<typeof codeSchema>) => {
-        console.log(values.code)
         setLoading(true)
         await hello.mutateAsync({
             code: values.code

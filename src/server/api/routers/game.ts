@@ -284,6 +284,7 @@ export const gameRouter = createTRPCRouter({
                 userId: true,
                 status: true,
                 currentQuestion: true,
+                updatedAt: true,  
                 quiz: {
                     select: {
                         totalQuestions: true
@@ -291,7 +292,7 @@ export const gameRouter = createTRPCRouter({
                 }
             },
             orderBy: {
-                completedAt: "asc",
+                currentQuestion: "desc"
             },
 
         })
