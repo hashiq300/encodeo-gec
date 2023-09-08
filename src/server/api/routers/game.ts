@@ -300,7 +300,7 @@ export const gameRouter = createTRPCRouter({
         const userIds = participations.map(participation => participation.userId)
 
 
-        const users = await clerkClient.users.getUserList({ userId: userIds });
+        const users = await clerkClient.users.getUserList({ userId: userIds, limit: userIds.length });
 
         const participationWithUser = participations.map(participation => ({
             ...participation,
